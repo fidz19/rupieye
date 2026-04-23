@@ -35,9 +35,7 @@ class TfliteCurrencyRecognizer implements CurrencyRecognizer {
     final interpreter = _interpreter;
     final labels = _labels;
     if (interpreter == null || labels == null || labels.isEmpty) {
-      throw CurrencyRecognitionException(
-        'Model TFLite belum berhasil dimuat.',
-      );
+      throw CurrencyRecognitionException('Model TFLite belum berhasil dimuat.');
     }
 
     final imageBytes = await File(imagePath).readAsBytes();
@@ -82,24 +80,29 @@ class TfliteCurrencyRecognizer implements CurrencyRecognizer {
       );
     }
 
-    final outputLength = outputShape.reduce((value, element) => value * element);
     final output = _createTensorBuffer(
       outputShape,
-      outputTensor.type == TfLiteType.uint8 ? 0 : 0.0,
+      outputTensor.type == TensorType.uint8 ? 0 : 0.0,
     );
 
     interpreter.run(input, output);
 
-    final scores = _flattenTensor(output).map((value) => value.toDouble()).toList(
-      growable: false,
-    );
+    final scores = _flattenTensor(
+      output,
+    ).map((value) => value.toDouble()).toList(growable: false);
     if (scores.isEmpty) {
-      throw CurrencyRecognitionException('Model tidak menghasilkan skor prediksi.');
+      throw CurrencyRecognitionException(
+        'Model tidak menghasilkan skor prediksi.',
+      );
     }
 
     var bestIndex = 0;
     var bestScore = scores.first;
-    for (var index = 1; index < math.min(scores.length, labels.length); index++) {
+    for (
+      var index = 1;
+      index < math.min(scores.length, labels.length);
+      index++
+    ) {
       if (scores[index] > bestScore) {
         bestScore = scores[index];
         bestIndex = index;
@@ -160,10 +163,10 @@ class TfliteCurrencyRecognizer implements CurrencyRecognizer {
     required int height,
     required int width,
     required int channels,
-    required TfLiteType inputType,
+    required TensorType inputType,
   }) {
     switch (inputType) {
-      case TfLiteType.float32:
+      case TensorType.float32:
         return List.generate(1, (_) {
           return List.generate(height, (y) {
             return List.generate(width, (x) {
@@ -173,17 +176,21 @@ class TfliteCurrencyRecognizer implements CurrencyRecognizer {
                 pixel.g / 255.0,
                 pixel.b / 255.0,
               ];
-              return values.sublist(0, channels);
+              return values.sublist(0, math.min(channels, values.length));
             });
           });
         });
-      case TfLiteType.uint8:
+      case TensorType.uint8:
         return List.generate(1, (_) {
           return List.generate(height, (y) {
             return List.generate(width, (x) {
               final pixel = image.getPixel(x, y);
-              final values = <int>[pixel.r.toInt(), pixel.g.toInt(), pixel.b.toInt()];
-              return values.sublist(0, channels);
+              final values = <int>[
+                pixel.r.toInt(),
+                pixel.g.toInt(),
+                pixel.b.toInt(),
+              ];
+              return values.sublist(0, math.min(channels, values.length));
             });
           });
         });
