@@ -23,17 +23,24 @@ class FlutterTtsSpeechService implements SpeechService {
     await _tryInvoke(
       () => _flutterTts.awaitSpeakCompletion(true),
       action: 'awaitSpeakCompletion',
+      disableOnPlatformException: false,
     );
-    await _tryInvoke(
-      () => _flutterTts.setLanguage('id-ID'),
-      action: 'setLanguage',
-    );
+    await _configureLanguage();
     await _tryInvoke(
       () => _flutterTts.setSpeechRate(0.45),
       action: 'setSpeechRate',
+      disableOnPlatformException: false,
     );
-    await _tryInvoke(() => _flutterTts.setPitch(1.0), action: 'setPitch');
-    await _tryInvoke(() => _flutterTts.setVolume(1.0), action: 'setVolume');
+    await _tryInvoke(
+      () => _flutterTts.setPitch(1.0),
+      action: 'setPitch',
+      disableOnPlatformException: false,
+    );
+    await _tryInvoke(
+      () => _flutterTts.setVolume(1.0),
+      action: 'setVolume',
+      disableOnPlatformException: false,
+    );
 
     if (_isAvailable) {
       _isInitialized = true;
@@ -66,6 +73,7 @@ class FlutterTtsSpeechService implements SpeechService {
   Future<void> _tryInvoke(
     Future<dynamic> Function() callback, {
     required String action,
+    bool disableOnPlatformException = true,
   }) async {
     if (!_isAvailable) {
       return;
@@ -76,16 +84,50 @@ class FlutterTtsSpeechService implements SpeechService {
     } on MissingPluginException catch (error) {
       _disableTts('TTS plugin is not available for action "$action": $error');
     } on PlatformException catch (error) {
-      _disableTts(
-        'TTS platform call failed for action "$action": ${error.code} ${error.message ?? ''}'
-            .trim(),
-      );
+      final message =
+          'TTS platform call failed for action "$action": ${error.code} ${error.message ?? ''}'
+              .trim();
+      if (disableOnPlatformException) {
+        _disableTts(message);
+      } else {
+        debugPrint(message);
+      }
     }
   }
 
   void _disableTts(String message) {
     _isAvailable = false;
     debugPrint(message);
+  }
+
+  Future<void> _configureLanguage() async {
+    const candidates = <String>['id-ID', 'id', 'en-US'];
+
+    for (final language in candidates) {
+      if (!_isAvailable) {
+        return;
+      }
+
+      try {
+        await _flutterTts.setLanguage(language);
+        debugPrint('TTS language set to $language');
+        return;
+      } on PlatformException catch (error) {
+        debugPrint(
+          'TTS language "$language" unavailable: ${error.code} ${error.message ?? ''}'
+              .trim(),
+        );
+      } on MissingPluginException catch (error) {
+        _disableTts(
+          'TTS plugin is not available for action "setLanguage": $error',
+        );
+        return;
+      }
+    }
+
+    debugPrint(
+      'No preferred TTS language was available. Continuing with device default voice if possible.',
+    );
   }
 }
 
