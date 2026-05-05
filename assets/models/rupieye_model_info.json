@@ -1,0 +1,22 @@
+{
+  "model": "rupieye_float32.tflite",
+  "task": "classification",
+  "input_shape": [1, 224, 224, 3],
+  "input_dtype": "float32",
+  "output_shape": [1, 7],
+  "output_dtype": "float32",
+  "labels": [
+    "1000",
+    "10000",
+    "100000",
+    "2000",
+    "20000",
+    "5000",
+    "50000"
+  ],
+  "preprocess": {
+    "resize": [224, 224],
+    "color_order": "RGB",
+    "normalize": "divide_by_255"
+  }
+}

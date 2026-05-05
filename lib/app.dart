@@ -37,7 +37,7 @@ class _RupieyeAppState extends State<RupieyeApp> {
     _recognizer =
         widget._recognizer ??
         TfliteCurrencyRecognizer(
-          modelAssetPath: 'assets/models/model_unquant_rupiah1.tflite',
+          modelAssetPath: 'assets/models/rupieye_float32.tflite',
           labelsAssetPath: 'assets/models/labels.txt',
         );
     _speechService = widget._speechService ?? FlutterTtsSpeechService();
