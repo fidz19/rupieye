@@ -489,7 +489,7 @@ class _RupieyeScanPageState extends State<RupieyeScanPage>
       'assets/images/reference_home.png',
       fit: BoxFit.cover,
       alignment: Alignment.center,
-      errorBuilder: (_, __, ___) {
+      errorBuilder: (_, _, _) {
         return Container(color: const Color(0xFFC9CCD7));
       },
     );

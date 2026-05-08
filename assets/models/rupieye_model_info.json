@@ -1,5 +1,7 @@
 {
   "model": "rupieye_float32.tflite",
+  "source_run": "runs/classify/rupieye_v2",
+  "alternative_model": "rupieye_float16.tflite",
   "task": "classification",
   "input_shape": [1, 224, 224, 3],
   "input_dtype": "float32",
