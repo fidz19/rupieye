@@ -317,7 +317,7 @@ class _RupieyeScanPageState extends State<RupieyeScanPage>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
-                        'assets/images/logo_rupi_eye.png',
+                        'assets/images/RUPI-EYE.png',
                         width: 52,
                         height: 52,
                       ),

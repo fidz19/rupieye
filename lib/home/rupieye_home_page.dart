@@ -118,7 +118,7 @@ class _RupieyeHomePageState extends State<RupieyeHomePage> {
                           children: [
                             SizedBox(height: isCompact ? 0 : 12),
                             Image.asset(
-                              'assets/images/logo_rupi_eye.png',
+                              'assets/images/RUPI-EYE.png',
                               width: logoSize,
                               height: logoSize,
                               fit: BoxFit.contain,
