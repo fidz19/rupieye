@@ -1,4 +1,4 @@
-package com.example.rupieye
+package com.rupieye
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -317,7 +317,7 @@ class _RupieyeScanPageState extends State<RupieyeScanPage>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
-                        'assets/images/RUPI-EYE.png',
+                        'assets/images/rupieye-wht.png',
                         width: 52,
                         height: 52,
                       ),
@@ -390,7 +390,7 @@ class _RupieyeScanPageState extends State<RupieyeScanPage>
                 Positioned(
                   left: 24,
                   right: 24,
-                  bottom: 118,
+                  bottom: 130,
                   child: Text(
                     _bottomInstruction,
                     textAlign: TextAlign.center,
@@ -411,7 +411,7 @@ class _RupieyeScanPageState extends State<RupieyeScanPage>
                 Positioned(
                   left: 24,
                   right: 24,
-                  bottom: 76,
+                  bottom: 85,
                   child: Text(
                     _cameraCaption,
                     textAlign: TextAlign.center,
@@ -485,14 +485,7 @@ class _RupieyeScanPageState extends State<RupieyeScanPage>
       return CameraPreview(controller);
     }
 
-    return Image.asset(
-      'assets/images/reference_home.png',
-      fit: BoxFit.cover,
-      alignment: Alignment.center,
-      errorBuilder: (_, _, _) {
-        return Container(color: const Color(0xFFC9CCD7));
-      },
-    );
+    return Container(color: const Color(0xFF1E2235));
   }
 
   String get _resultTitle {

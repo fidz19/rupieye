@@ -125,18 +125,6 @@ class _RupieyeHomePageState extends State<RupieyeHomePage> {
                             ),
                             SizedBox(height: isCompact ? 12 : 18),
                             Text(
-                              'RUPI-EYE',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.displaySmall
-                                  ?.copyWith(
-                                    color: brandBlue,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 1,
-                                    fontSize: isCompact ? 34 : null,
-                                  ),
-                            ),
-                            SizedBox(height: isCompact ? 12 : 18),
-                            Text(
                               'Aplikasi bantu untuk mengenali nominal uang rupiah dengan kamera dan suara.',
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.titleMedium
