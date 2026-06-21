@@ -17,6 +17,7 @@ RUPI-EYE adalah aplikasi Flutter untuk membantu penyandang tunanetra mengenali n
 - TTS sudah disiapkan memakai `flutter_tts`.
 - Recognizer offline memakai model TFLite lokal.
 - Recognizer hybrid tersedia: offline dulu, lalu fallback online jika `RUPIEYE_ONLINE_RECOGNIZER_URL` diisi.
+- Recognizer hybrid juga bisa memakai Roboflow Serverless Hosted API dengan model `deteksi-rupiah/3`.
 
 ## Mode hybrid online
 
@@ -24,6 +25,23 @@ Jangan simpan API key Groq di Flutter. Jalankan backend proxy di `backend/groq-p
 
 ```sh
 flutter run --dart-define=RUPIEYE_ONLINE_RECOGNIZER_URL=http://10.0.2.2:8787/recognize-currency
+```
+
+## Mode hybrid Roboflow
+
+Jalankan app dengan API key Roboflow. Jangan commit API key ke repository.
+
+```sh
+flutter run \
+  --dart-define=RUPIEYE_ROBOFLOW_API_KEY=your_roboflow_key
+```
+
+Secara default app memakai endpoint `https://serverless.roboflow.com` dan model `deteksi-rupiah/3`. Keduanya bisa dioverride:
+
+```sh
+flutter run \
+  --dart-define=RUPIEYE_ROBOFLOW_API_KEY=your_roboflow_key \
+  --dart-define=RUPIEYE_ROBOFLOW_MODEL_ID=deteksi-rupiah/3
 ```
 
 ## Langkah berikutnya

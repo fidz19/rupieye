@@ -37,7 +37,18 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    applicationVariants.all {
+        val appName = "rupieye"
+        val versionName = versionName ?: "unknown"
+        val buildType = buildType.name
+        outputs.all {
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            output.outputFileName = "${appName}-${versionName}-${buildType}.apk"
+        }
+    }
 }
+
 
 flutter {
     source = "../.."
