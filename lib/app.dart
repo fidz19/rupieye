@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:rupieye/home/rupieye_intro_screen.dart';
 import 'package:rupieye/home/rupieye_home_page.dart';
 import 'package:rupieye/services/currency_recognizer.dart';
+import 'package:rupieye/services/hybrid_currency_recognizer.dart';
+import 'package:rupieye/services/online_currency_recognizer.dart';
 import 'package:rupieye/services/speech_service.dart';
 import 'package:rupieye/services/tflite_currency_recognizer.dart';
+
+const _onlineRecognizerUrl = String.fromEnvironment(
+  'RUPIEYE_ONLINE_RECOGNIZER_URL',
+);
 
 class RupieyeApp extends StatefulWidget {
   const RupieyeApp({
@@ -34,12 +40,7 @@ class _RupieyeAppState extends State<RupieyeApp> {
   @override
   void initState() {
     super.initState();
-    _recognizer =
-        widget._recognizer ??
-        TfliteCurrencyRecognizer(
-          modelAssetPath: 'assets/models/rupieye_float32.tflite',
-          labelsAssetPath: 'assets/models/labels.txt',
-        );
+    _recognizer = widget._recognizer ?? _createDefaultRecognizer();
     _speechService = widget._speechService ?? FlutterTtsSpeechService();
 
     if (!widget._showIntro) {
@@ -56,6 +57,27 @@ class _RupieyeAppState extends State<RupieyeApp> {
         _introFinished = true;
       });
     });
+  }
+
+  CurrencyRecognizer _createDefaultRecognizer() {
+    final offlineRecognizer = TfliteCurrencyRecognizer(
+      modelAssetPath: 'assets/models/rupieye_float32.tflite',
+      labelsAssetPath: 'assets/models/labels.txt',
+    );
+
+    if (_onlineRecognizerUrl.isEmpty) {
+      return offlineRecognizer;
+    }
+
+    final endpoint = Uri.tryParse(_onlineRecognizerUrl);
+    if (endpoint == null || !endpoint.hasScheme || endpoint.host.isEmpty) {
+      return offlineRecognizer;
+    }
+
+    return HybridCurrencyRecognizer(
+      offlineRecognizer: offlineRecognizer,
+      onlineRecognizer: OnlineCurrencyRecognizer(endpoint: endpoint),
+    );
   }
 
   @override

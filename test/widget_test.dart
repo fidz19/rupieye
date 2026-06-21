@@ -18,7 +18,12 @@ void main() {
       ),
     );
 
-    expect(find.text('RUPI-EYE'), findsOneWidget);
+    expect(
+      find.text(
+        'Aplikasi bantu untuk mengenali nominal uang rupiah dengan kamera dan suara.',
+      ),
+      findsOneWidget,
+    );
     expect(find.text('SCAN'), findsOneWidget);
     expect(find.text('HELP'), findsOneWidget);
 

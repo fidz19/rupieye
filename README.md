@@ -15,11 +15,19 @@ RUPI-EYE adalah aplikasi Flutter untuk membantu penyandang tunanetra mengenali n
 - UI utama sudah diganti dari template default menjadi flow aksesibel satu layar.
 - State aplikasi sudah mengikuti proses `idle -> capturing -> recognizing -> speaking`.
 - TTS sudah disiapkan memakai `flutter_tts`.
-- Recognizer masih berupa simulasi nominal agar alur end-to-end bisa diuji lebih dulu.
+- Recognizer offline memakai model TFLite lokal.
+- Recognizer hybrid tersedia: offline dulu, lalu fallback online jika `RUPIEYE_ONLINE_RECOGNIZER_URL` diisi.
+
+## Mode hybrid online
+
+Jangan simpan API key Groq di Flutter. Jalankan backend proxy di `backend/groq-proxy`, lalu mulai app dengan URL proxy:
+
+```sh
+flutter run --dart-define=RUPIEYE_ONLINE_RECOGNIZER_URL=http://10.0.2.2:8787/recognize-currency
+```
 
 ## Langkah berikutnya
 
-- Integrasikan `camera` untuk preview dan pengambilan frame.
-- Sambungkan model AI klasifikasi nominal rupiah.
+- Deploy proxy ke backend sungguhan sebelum rilis.
 - Tambahkan dataset uang rupiah dengan variasi kondisi pencahayaan dan sudut.
 - Tambahkan feedback audio ketika hasil tidak yakin atau uang tidak terdeteksi.
