@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:rupieye/home/rupieye_intro_screen.dart';
 import 'package:rupieye/home/rupieye_home_page.dart';
 import 'package:rupieye/services/currency_recognizer.dart';
+import 'package:rupieye/services/groq_currency_recognizer.dart';
 import 'package:rupieye/services/hybrid_currency_recognizer.dart';
 import 'package:rupieye/services/online_currency_recognizer.dart';
 import 'package:rupieye/services/roboflow_currency_recognizer.dart';
 import 'package:rupieye/services/speech_service.dart';
 import 'package:rupieye/services/tflite_currency_recognizer.dart';
+import 'package:rupieye/services/tflite_groq_currency_recognizer.dart';
 
 const _onlineRecognizerUrl = String.fromEnvironment(
   'RUPIEYE_ONLINE_RECOGNIZER_URL',
@@ -20,6 +22,7 @@ const _roboflowModelId = String.fromEnvironment(
   'RUPIEYE_ROBOFLOW_MODEL_ID',
   defaultValue: 'deteksi-rupiah/3',
 );
+const _groqApiKey = String.fromEnvironment('RUPIEYE_GROQ_API_KEY');
 
 class RupieyeApp extends StatefulWidget {
   const RupieyeApp({
@@ -75,6 +78,19 @@ class _RupieyeAppState extends State<RupieyeApp> {
       labelsAssetPath: 'assets/models/labels.txt',
     );
 
+    // Prioritas 1: TFLite + Groq AI Hybrid
+    if (_groqApiKey.isNotEmpty) {
+      final groqRecognizer = GroqCurrencyRecognizer(
+        apiKey: _groqApiKey,
+      );
+      return TfliteGroqCurrencyRecognizer(
+        tfliteRecognizer: offlineRecognizer,
+        groqRecognizer: groqRecognizer,
+        enableLogging: true,
+      );
+    }
+
+    // Prioritas 2: TFLite + Roboflow Hybrid
     if (_roboflowApiKey.isNotEmpty) {
       return HybridCurrencyRecognizer(
         offlineRecognizer: offlineRecognizer,
@@ -86,6 +102,7 @@ class _RupieyeAppState extends State<RupieyeApp> {
       );
     }
 
+    // Prioritas 3: TFLite + Custom Online Recognizer
     if (_onlineRecognizerUrl.isNotEmpty) {
       final endpoint = Uri.tryParse(_onlineRecognizerUrl);
       if (endpoint != null && endpoint.hasScheme && endpoint.host.isNotEmpty) {
@@ -96,6 +113,7 @@ class _RupieyeAppState extends State<RupieyeApp> {
       }
     }
 
+    // Fallback: TFLite saja
     return offlineRecognizer;
   }
 

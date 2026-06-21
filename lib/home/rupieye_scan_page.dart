@@ -538,7 +538,7 @@ class _RupieyeScanPageState extends State<RupieyeScanPage>
 
   String get _cameraCaption {
     if (_status == ScanStatus.error && _errorMessage != null) {
-      return _errorMessage!;
+      return _formatErrorMessage(_errorMessage!);
     }
 
     if (_hasReadyCamera) {
@@ -547,5 +547,53 @@ class _RupieyeScanPageState extends State<RupieyeScanPage>
 
     return _cameraMessage ??
         'Menyiapkan camera. Jika diminta, izinkan akses camera.';
+  }
+
+  String _formatErrorMessage(String error) {
+    // Extract user-friendly error message
+    final lowerError = error.toLowerCase();
+    
+    // TFLite errors
+    if (lowerError.contains('tidak cukup yakin')) {
+      final match = RegExp(r'confidence\s+([\d.]+)%').firstMatch(error);
+      if (match != null) {
+        return 'Hasil deteksi kurang yakin (${match.group(1)}%). Coba ambil foto yang lebih jelas.';
+      }
+      return 'Hasil deteksi kurang yakin. Coba ambil foto dengan cahaya lebih terang dan sudut yang lebih tepat.';
+    }
+    
+    if (lowerError.contains('tidak bisa dibaca')) {
+      return 'Foto tidak dapat dibaca. Pastikan kamera fokus dan uang terlihat jelas.';
+    }
+    
+    // Groq errors
+    if (lowerError.contains('groq api error')) {
+      if (lowerError.contains('401') || lowerError.contains('unauthorized')) {
+        return 'Koneksi API gagal. Hubungi administrator aplikasi.';
+      }
+      if (lowerError.contains('429')) {
+        return 'Terlalu banyak permintaan. Tunggu beberapa detik dan coba lagi.';
+      }
+      if (lowerError.contains('timeout')) {
+        return 'Koneksi internet lambat. Pastikan koneksi stabil dan coba lagi.';
+      }
+      return 'Verifikasi online gagal. Periksa koneksi internet dan coba lagi.';
+    }
+    
+    if (lowerError.contains('tidak menemukan nominal')) {
+      return 'Bukan uang rupiah atau tidak terdeteksi. Pastikan uang dalam kondisi baik dan terlihat jelas.';
+    }
+    
+    if (lowerError.contains('tidak tersedia')) {
+      return 'Sumber verifikasi tidak tersedia. Coba lagi dalam beberapa saat.';
+    }
+    
+    // Network/Connection errors
+    if (lowerError.contains('timeout') || lowerError.contains('connection')) {
+      return 'Koneksi internet terputus atau lambat. Periksa wifi/data Anda.';
+    }
+    
+    // Default user-friendly message
+    return 'Pengenalan gagal. Coba ambil foto yang lebih jelas dengan pencahayaan yang baik.';
   }
 }
